@@ -62,19 +62,48 @@ int testEigen() {
     std::cout << sin(theta) << "\t" << cos(theta) << "\t" << 2 << std::endl;
     std::cout << 0 << "\t" << 0 << "\t" << 1 << std::endl;
     std::cout << "p2(" <<  p_[0] << ", " << p_[1] << ')'<< std::endl;
+
+    p_ = p_ / 2.0f;
+    std::cout << p_ << std::endl;
+
+    transform(2, 2) = 1.1;
+    std::cout << transform << std::endl;
+
+    Eigen::Vector2f a(2.5f, 3.5f);
+    Eigen::Vector3f b(a[0], a[1], 1.0f);
+    std::cout << b << std::endl;
+
+    Eigen::Vector3f u;
+    u << 233.0f, 123.0f, 1.0f;
+    std::cout << u << std::endl;
+
+    float c[8] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f};
+    Eigen::Map<Eigen::VectorXf> i0(c, 8);
+
+    i0 = i0 - (Eigen::VectorXf::Ones(i0.size()) * i0.mean());
+
+    std::cout << i0 << std::endl << i0.mean() << std::endl;
+
     return 0;
 }
 
 int benchmarkEigen(int counts) {
-    Eigen::MatrixXf m = Eigen::MatrixXf::Random(8,400);
+    Eigen::MatrixXf m = Eigen::MatrixXf::Random(8,100);
+    Eigen::MatrixXf m2 = Eigen::MatrixXf::Random(100,400);
     Eigen::VectorXf v = Eigen::VectorXf::Random(400);
 
     for (int i = 0; i < counts; ++i)
     {
-        Eigen::VectorXf result = m * v;
+        Eigen::VectorXf result = m * m2 * v;
     }
 
     return 0;
+}
+
+int main() {
+    testEigen();
+    example_eigen();
+    benchmarkEigen(10);
 }
 
 // embind

@@ -18,7 +18,9 @@ mv eigen-3.4.0 eigen
 
 install emscripten and activate it
 
-## 编译
+## helloWorld module
+
+### 编译
 
 ```bash
 
@@ -26,7 +28,7 @@ emcc --bind -o helloWorld.js -s MODULARIZE -s EXPORT_NAME=HelloWorldModule src/h
 
 ```
 
-## 使用
+### 使用
 
 example code:
 
@@ -43,3 +45,16 @@ foo() {
 }
 
 ```
+
+## class LinearPredictor
+
+### 编译
+
+emcc --bind -o linearPredictor.js -s MODULARIZE -s EXPORT_NAME=LinearPredictor  src/tracker/linear_predictor.cpp  -I ./eigen/ -s SINGLE_FILE=1
+
+### 使用
+
+TODO
+
+### notice!
+embind 还有点问题，还不能在web里正常使用
