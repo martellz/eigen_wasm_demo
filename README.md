@@ -50,7 +50,11 @@ foo() {
 
 ### 编译
 
+```bash
+
 emcc -lembind -o linearPredictor.js -s MODULARIZE -s EXPORT_NAME=LinearPredictor  src/tracker/linear_predictor.cpp  -I ./eigen/ -s SINGLE_FILE=1 -s WASM_ASYNC_COMPILATION=0 -s EXPORTED_FUNCTIONS='["_malloc", "_free"]' -s WASM=1 -sINITIAL_MEMORY=33554432 -sALLOW_MEMORY_GROWTH -O3
+
+```
 
 ### 使用
 
