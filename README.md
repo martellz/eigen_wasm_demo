@@ -18,7 +18,9 @@ mv eigen-3.4.0 eigen
 
 install emscripten and activate it
 
-## 编译
+## helloWorld module
+
+### 编译
 
 ```bash
 
@@ -26,7 +28,7 @@ emcc --bind -o helloWorld.js -s MODULARIZE -s EXPORT_NAME=HelloWorldModule src/h
 
 ```
 
-## 使用
+### 使用
 
 example code:
 
@@ -40,6 +42,33 @@ foo() {
         m.testEigen();
         m.benchmarkEigen();
     });
+}
+
+```
+
+## class LinearPredictor
+
+### 编译
+
+emcc -lembind -o linearPredictor.js -s MODULARIZE -s EXPORT_NAME=LinearPredictor  src/tracker/linear_predictor.cpp  -I ./eigen/ -s SINGLE_FILE=1 -s WASM_ASYNC_COMPILATION=0 -s EXPORTED_FUNCTIONS='["_malloc", "_free"]' -s WASM=1 -sINITIAL_MEMORY=33554432 -sALLOW_MEMORY_GROWTH -O3
+
+### 使用
+
+```javascript
+
+import LinearPredictor from "./linearPredictor.js";
+
+const linearPredictorPromise = LinearPredictor();
+if (linearPredictorPromise instanceof Promise) {
+    linearPredictorPromise.then((m2) => {
+        const m_instance = new m2.LinearPredictor();
+        console.log(m_instance);
+        console.log(m_instance.load, m_instance.track, m_instance.set_corners);
+    });
+} else {
+    const m_instance = new linearPredictorPromise.LinearPredictor();
+    console.log(m_instance);
+    console.log(m_instance.load, m_instance.track, m_instance.set_corners);
 }
 
 ```
