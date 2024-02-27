@@ -1,3 +1,5 @@
+#include <iostream>
+#include <math.h>
 #include <Eigen/Core>
 
 void homography_from_4pt(const float *x, const float *y, const float *z, const float *w, float cgret[8])
@@ -53,16 +55,16 @@ void homography_transform(const float H[3][3], const float a[2], float r[2])
 
 void homography_transform(Eigen::Matrix3f H, float u, float v, float & up, float & vp)
 {
-	float inv_k = H(2, 0)*u + H(2, 1)*v + H(2, 2);
-	up = float((H(0, 0)*u + H(0, 1)*v + H(0, 2)) * inv_k);
-	vp = float((H(1, 0)*u + H(1, 1)*v + H(1, 2)) * inv_k);
+	float inv_k = 1.0 / (H(2, 0)*u + H(2, 1)*v + H(2, 2));
+	up = float(floor((H(0, 0)*u + H(0, 1)*v + H(0, 2)) * inv_k + 0.5));
+	vp = float(floor((H(1, 0)*u + H(1, 1)*v + H(1, 2)) * inv_k + 0.5));
 }
 
 void homography_transform(Eigen::Matrix3f H, float u, float v, int & up, int & vp)
 {
-	float inv_k = H(2, 0)*u + H(2, 1)*v + H(2, 2);
-	up = int((H(0, 0)*u + H(0, 1)*v + H(0, 2)) * inv_k);
-	vp = int((H(1, 0)*u + H(1, 1)*v + H(1, 2)) * inv_k);
+	float inv_k = 1.0 / (H(2, 0)*u + H(2, 1)*v + H(2, 2));
+	up = int(floor((H(0, 0)*u + H(0, 1)*v + H(0, 2)) * inv_k + 0.5));
+	vp = int(floor((H(1, 0)*u + H(1, 1)*v + H(1, 2)) * inv_k + 0.5));
 }
 
 void homography_transform(Eigen::Matrix3f homo, Eigen::Vector2f a, Eigen::Vector2f r) {
@@ -73,7 +75,7 @@ void homography_transform(Eigen::Matrix3f homo, Eigen::Vector2f a, Eigen::Vector
     r[1] = result[1];
 }
 
-void homography_from_4corresp(Eigen::Matrix3f R, Eigen::VectorXf u, Eigen::VectorXf up)
+void homography_from_4corresp(Eigen::Matrix3f& R, Eigen::VectorXf u, Eigen::VectorXf up)
 {
     const float a[] = {u[0], u[1]};
     const float b[] = {u[2], u[3]};
@@ -120,14 +122,10 @@ void homography_from_4corresp(Eigen::Matrix3f R, Eigen::VectorXf u, Eigen::Vecto
 	R(2, 2) = -Hl[2][0]*t50-Hl[2][1]*(t44*t15)+t47*t15;
 }
 
-bool normalize(Eigen::VectorXf i1) {
-    Eigen::VectorXf mean = Eigen::VectorXf::Ones(i1.size()) * i1.mean();
-    i1 = i1 - mean;
-    float std = i1.norm();
-    if (abs(std) < 1e-3) {
-        return false;
-    }
-
-    i1 = i1 / std;
+bool normalize(Eigen::VectorXf& i1) {
+	float mean = i1.mean();
+	float square = i1.transpose() * i1;
+    float temp = 1.0 / sqrt(square / i1.size() - pow(mean, 2));
+    i1 = (i1 - Eigen::VectorXf::Ones(i1.size()) * mean) * temp;
     return true;
 }
